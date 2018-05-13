@@ -8,27 +8,23 @@ class DBHelper {
    * Change this to restaurants.json file location on your server.
    */
   static get DATABASE_URL() {
-    const port = 1337 // Change this to your server port
-    return `http://localhost:${port}/`;
+    // const port = 1337 // Change this to your server port
+    //return `http://localhost:${port}/`;
+    return `https://pure-fjord-23296.herokuapp.com/`;
   }
-
   /**
    * Fetch all restaurants.
    */
   static fetchRestaurants(callback) {
-    let xhr = new XMLHttpRequest();
-    xhr.open('GET', `${DBHelper.DATABASE_URL}restaurants`);
-    xhr.onload = () => {
-      if (xhr.status === 200) { // Got a success response from server!
-        const json = JSON.parse(xhr.responseText);
-        const restaurants = json;
-        callback(null, restaurants);
-      } else { // Oops!. Got an error from server.
-        const error = (`Request failed. Returned status of ${xhr.status}`);
-        callback(error, null);
-      }
-    };
-    xhr.send();
+    const url = `${DBHelper.DATABASE_URL}restaurants`;
+    fetch(url)
+      .then(restaurants => restaurants.json())
+      .then(function (response) {
+        callback(null, response);
+      }).catch(function (error) {
+        const msg = (`Request failed. Returned status of ${error}`);
+        callback(msg, null);
+      });
   }
 
   /**
@@ -40,7 +36,7 @@ class DBHelper {
     fetch(url)
       .then(restaurant => restaurant.json())
       .then(function (response) {
-        if(response === -1) {
+        if (response === -1) {
           callback(`Sorry, you are offline right now`, null);
         } else {
           callback(null, response);

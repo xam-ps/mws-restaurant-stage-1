@@ -1,4 +1,4 @@
-var staticCacheName = 'yelplight-v0.4.37';
+var staticCacheName = 'yelplight-v0.4.45';
 var contentImgsCache = 'yelplight-content-imgs';
 var contentRestaurants = 'yelplight-restaurants'
 var allCaches = [
@@ -44,7 +44,7 @@ self.addEventListener('fetch', function (event) {
     let requestUrl = new URL(event.request.url);
     let splitPath = requestUrl.pathname.split('/');
 
-    if (requestUrl.href.endsWith('1337/restaurants')) {
+    if (requestUrl.href.endsWith('/restaurants')) {
         event.respondWith(serveRestaurants(event.request));
         return;
     }
