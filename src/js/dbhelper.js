@@ -1,3 +1,8 @@
+let db;
+db = idb.open('yelplight', 1, function (upgradeDb) {
+  upgradeDb.createObjectStore('restaurants', { keyPath: 'id' });
+});
+
 /**
  * Common database helper functions.
  */
@@ -7,6 +12,8 @@ class DBHelper {
    * Database URL.
    * Change this to restaurants.json file location on your server.
    */
+
+
   static get DATABASE_URL() {
     // const port = 1337 // Change this to your server port
     //return `http://localhost:${port}/`;
@@ -39,6 +46,11 @@ class DBHelper {
         if (response === -1) {
           callback(`Sorry, you are offline right now`, null);
         } else {
+          let tx = db.transaction('restaurants', 'readwrite');
+          let restaurantStore = tx.objectStore('restaurants');
+          response.forEach(function (message) {
+            restaurantStore.put(message);
+          });
           callback(null, response);
         }
       })
