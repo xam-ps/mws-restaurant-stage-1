@@ -1,6 +1,6 @@
 let db;
-db = idb.open('yelplight', 1, function (upgradeDb) {
-  upgradeDb.createObjectStore('restaurants', { keyPath: 'id' });
+dbPromise = idb.open('yelplight', 1, function (upgradeDb) {
+  upgradeDb.createObjectStore('restaurants', {keyPath: 'id'});
 });
 
 /**
@@ -39,24 +39,32 @@ class DBHelper {
    */
   static fetchRestaurantById(id, callback) {
     // fetch all restaurants with proper error handling.
-    const url = `${DBHelper.DATABASE_URL}restaurants/${id}`;
-    fetch(url)
-      .then(restaurant => restaurant.json())
-      .then(function (response) {
-        if (response === -1) {
-          callback(`Sorry, you are offline right now`, null);
-        } else {
-          let tx = db.transaction('restaurants', 'readwrite');
-          let restaurantStore = tx.objectStore('restaurants');
-          response.forEach(function (message) {
-            restaurantStore.put(message);
-          });
-          callback(null, response);
-        }
-      })
-      .catch(function (error) {
-        callback(`Sorry, that restaurant doesn't exist`, null);
-      });
+    dbPromise.then(function(db){
+      let tx = db.transaction('restaurants');
+      let restaurantStore = tx.objectStore('restaurants');
+      return restaurantStore.get(id);
+    }).then(function(val){
+      callback(null, val);
+    }).catch(function(error){
+      const url = `${DBHelper.DATABASE_URL}restaurants/${id}`;
+      fetch(url)
+        .then(restaurant => restaurant.json())
+        .then(function (response) {
+          if (response === -1) {
+            callback(`Sorry, you are offline right now`, null);
+          } else {
+            dbPromise.then(function(db){
+              let tx = db.transaction('restaurants', 'readwrite');
+              let restaurantStore = tx.objectStore('restaurants');
+              restaurantStore.put(response);
+            })
+            callback(null, response);
+          }
+        })
+        .catch(function (error) {
+          callback(`Sorry, that restaurant doesn't exist`, null);
+        });
+    });
   }
 
   /**
