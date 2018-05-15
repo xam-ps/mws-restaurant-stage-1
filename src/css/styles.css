@@ -1,3 +1,4 @@
+@charset "UTF-8";
 /* CSS Document */
 * {
   padding: 0px;
@@ -137,7 +138,7 @@ nav h1 a {
 #breadcrumb li + li:before {
   padding: 8px;
   color: black;
-  content: "/\00a0";
+  content: "/ ";
 }
 #breadcrumb a {
   color: #2196F3;
@@ -601,4 +602,4 @@ nav h1 a {
   }
 }
 
-/*# sourceMappingURL=styles.css.map */
+/*# sourceMappingURL=src/css/styles.css.map */
