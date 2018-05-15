@@ -1,4 +1,4 @@
-var staticCacheName = 'yelplight-v0.4.45';
+var staticCacheName = 'yelplight-v0.4.52';
 var contentImgsCache = 'yelplight-content-imgs';
 var contentRestaurants = 'yelplight-restaurants'
 var allCaches = [
@@ -17,6 +17,7 @@ self.addEventListener('install', function (e) {
                 'css/styles.css',
                 'js/dbhelper.js',
                 'js/main.js',
+                'js/idb.js',
                 'js/restaurant_info.js'
             ]);
         })
@@ -44,15 +45,15 @@ self.addEventListener('fetch', function (event) {
     let requestUrl = new URL(event.request.url);
     let splitPath = requestUrl.pathname.split('/');
 
-    if (requestUrl.href.endsWith('/restaurants')) {
+    /* if (requestUrl.href.endsWith('/restaurants')) {
         event.respondWith(serveRestaurants(event.request));
         return;
-    }
+    } 
 
     if ((splitPath[1] == 'restaurants') && (splitPath[2] == parseInt(splitPath[2],10))) {
         event.respondWith(serveRestaurants(event.request));
         return;
-    }
+    } */
 
     if (requestUrl.origin === location.origin) {
         if (requestUrl.pathname === '/') {
@@ -65,6 +66,12 @@ self.addEventListener('fetch', function (event) {
             event.respondWith(servePhoto(event.request));
             return;
         }
+        if (requestUrl.pathname.startsWith('/restaurant.html')) {
+            event.respondWith(
+                caches.match('restaurant.html')
+            );
+            return;
+        }
     }
 
     event.respondWith(
@@ -74,7 +81,7 @@ self.addEventListener('fetch', function (event) {
     );
 });
 
-function serveRestaurants(request) {
+/* function serveRestaurants(request) {
     var storageUrl = request.url;
 
     return caches.open(contentRestaurants).then(function (cache) {
@@ -90,18 +97,18 @@ function serveRestaurants(request) {
         });
     });
 }
-
+ */
 function servePhoto(request) {
     var storageUrl = request.url;
-  
-    return caches.open(contentImgsCache).then(function(cache) {
-      return cache.match(storageUrl).then(function(response) {
-        if (response) return response;
-  
-        return fetch(request).then(function(networkResponse) {
-          cache.put(storageUrl, networkResponse.clone());
-          return networkResponse;
+
+    return caches.open(contentImgsCache).then(function (cache) {
+        return cache.match(storageUrl).then(function (response) {
+            if (response) return response;
+
+            return fetch(request).then(function (networkResponse) {
+                cache.put(storageUrl, networkResponse.clone());
+                return networkResponse;
+            });
         });
-      });
     });
-  }
+}
