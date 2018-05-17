@@ -66,13 +66,17 @@ class DBHelper {
         })
         callback(null, response);
       }).catch(function (error) {
+        dbPromise.then(db => {
+          return db.transaction('restaurants')
+            .objectStore('restaurants').get(id);
+        }).then(obj => console.log(obj));
         dbPromise.then(function (db) {
           let tx = db.transaction('restaurants');
           let restaurantStore = tx.objectStore('restaurants');
-          return restaurantStore.get(id);
-        }).then(function (restaurant) {
-          callback(null, restaurant);
-        }).catch(function (error) {
+          return restaurantStore.get(Number(id));
+        }).then(
+          val => callback(null, val)
+        ).catch(function (error) {
           callback(`Sorry, you are offline right now!`, null);
         });
       });
