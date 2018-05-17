@@ -1,18 +1,12 @@
-let db;
-dbPromise = idb.open('yelplight', 1, function (upgradeDb) {
-  upgradeDb.createObjectStore('restaurants', { keyPath: 'id' });
-});
-
 /**
  * Common database helper functions.
  */
-class DBHelper {
 
+class DBHelper {
   /**
    * Database URL.
    * Change this to restaurants.json file location on your server.
    */
-
 
   static get DATABASE_URL() {
     // const port = 1337 // Change this to your server port
@@ -27,25 +21,10 @@ class DBHelper {
     fetch(url)
       .then(restaurants => restaurants.json())
       .then(function (response) {
-        dbPromise.then(function (db) {
-          let tx = db.transaction('restaurants', 'readwrite');
-          let restaurantStore = tx.objectStore('restaurants');
-          response.forEach(function (restaurant) {
-            restaurantStore.put(restaurant);
-          });
-        });
         callback(null, response);
       }).catch(function (error) {
-        dbPromise.then(function (db) {
-          let tx = db.transaction('restaurants');
-          let restaurantStore = tx.objectStore('restaurants');
-          return restaurantStore.getAll();
-        }).then(function (restaurants) {
-          callback(null, restaurants);
-        }).catch(function (error) {
-          const msg = (`Request failed. Returned status of ${error}`);
-          callback(msg, null);
-        });
+        const msg = (`Request failed. Returned status of ${error}`);
+        callback(msg, null);
       });
   }
 
@@ -54,31 +33,24 @@ class DBHelper {
    */
   static fetchRestaurantById(id, callback) {
     // fetch all restaurants with proper error handling.
-
     const url = `${DBHelper.DATABASE_URL}restaurants/${id}`;
     fetch(url)
       .then(restaurant => restaurant.json())
       .then(function (response) {
-        dbPromise.then(function (db) {
-          let tx = db.transaction('restaurants', 'readwrite');
-          let restaurantStore = tx.objectStore('restaurants');
-          restaurantStore.put(response);
-        })
-        callback(null, response);
-      }).catch(function (error) {
-        dbPromise.then(db => {
-          return db.transaction('restaurants')
-            .objectStore('restaurants').get(id);
-        }).then(obj => console.log(obj));
-        dbPromise.then(function (db) {
-          let tx = db.transaction('restaurants');
-          let restaurantStore = tx.objectStore('restaurants');
-          return restaurantStore.get(Number(id));
-        }).then(
-          val => callback(null, val)
-        ).catch(function (error) {
-          callback(`Sorry, you are offline right now!`, null);
-        });
+        if (response === -1) {
+          callback(`Sorry, you are offline right now`, null);
+        } else {
+          db.then(function (db) {
+            let tx = db.transaction('restaurants', 'readwrite');
+            let restaurantStore = tx.objectStore('restaurants');
+            restaurantStore.put(id, { response });
+            return tx.complete;
+          });
+          callback(null, response);
+        }
+      })
+      .catch(function (error) {
+        callback(`Sorry, that restaurant doesn't exist`, null);
       });
   }
 

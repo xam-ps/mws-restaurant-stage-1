@@ -5,6 +5,7 @@ var map;
  * Initialize Google map, called from HTML.
  */
 window.initMap = () => {
+  registerServiceWorker();
   fetchRestaurantFromURL((error, restaurant) => {
     if (error) { // Got an error!
       console.error(error);
@@ -18,6 +19,15 @@ window.initMap = () => {
       DBHelper.mapMarkerForRestaurant(self.restaurant, self.map);
     }
   });
+}
+
+registerServiceWorker = function () {
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js').then(function (reg) {
+       console.log("Service Worker Registered"); 
+      }
+    );
+  }
 }
 
 /**

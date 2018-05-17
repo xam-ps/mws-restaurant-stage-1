@@ -41,6 +41,11 @@
             "type": "image/png"
         },
         {
+            "src": "/img/favicon/icon-512.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        },
+        {
             "src": "/img/favicon/icon-720.png",
             "sizes": "720x720",
             "type": "image/png"

@@ -158,8 +158,9 @@ createRestaurantHTML = (restaurant) => {
     image.title = `Picture of ${restaurant.name}`;
     image.alt = `Picture of ${restaurant.name}`;
   } else {
-    image.src = '/img/noimage.jpg';
-    imgsrc = image.src.split('.');
+    let imgsrc = '/img/noimage.jpg';
+    image.src = imgsrc;
+    imgsrc = imgsrc.split('.');
     image.srcset = `${imgsrc[0]}-200.${imgsrc[1]} 200w, ${imgsrc[0]}-400.${imgsrc[1]} 400w, ${imgsrc[0]}-600.${imgsrc[1]} 600w, ${imgsrc[0]}.${imgsrc[1]} 800w`;
     image.title = `No image for ${restaurant.name} available`;
     image.alt = `No image for ${restaurant.name} available`;
