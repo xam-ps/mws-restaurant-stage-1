@@ -75,10 +75,14 @@ class DBHelper {
           let restaurantStore = tx.objectStore('restaurants');
           return restaurantStore.get(Number(id));
         }).then(
-          val => callback(null, val)
-        ).catch(function (error) {
-          callback(`Sorry, you are offline right now!`, null);
-        });
+          val => {
+            if(val) {
+              callback(null, val)
+            } else {
+              callback(`Sorry, you are offline right now!`, null);
+            }
+          }
+        )
       });
   }
 

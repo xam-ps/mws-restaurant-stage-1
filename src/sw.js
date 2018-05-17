@@ -1,4 +1,4 @@
-var staticCacheName = 'yelplight-v0.4.61';
+var staticCacheName = 'yelplight-v0.4.62';
 var contentImgsCache = 'yelplight-content-imgs';
 var contentRestaurants = 'yelplight-restaurants'
 var allCaches = [
