@@ -17,8 +17,23 @@ class DBHelper {
   static get DATABASE_URL() {
     // const port = 1337 // Change this to your server port
     //return `http://localhost:${port}/`;
-    return `https://pure-fjord-23296.herokuapp.com/`;
+    return `https://sheltered-garden-81446.herokuapp.com/`;
   }
+
+  static changeFavorite(id, state, callback){
+    const url = `${DBHelper.DATABASE_URL}restaurants/${id}/?is_favorite=${state}`;
+    fetch(url, {
+        method: 'PUT'
+    })
+    .then(response => response.json())
+    .then(function(response){
+      callback(0);
+    })
+    .catch(function(error) {
+      callback(-1);
+    })
+  }
+
   /**
    * Fetch all restaurants.
    */

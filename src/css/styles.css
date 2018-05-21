@@ -259,12 +259,17 @@ nav h1 a {
 }
 #restaurants-list .fav {
   color: #FF5252;
-  font-size: 5em;
+  font-size: 2.5em;
   line-height: 0.8em;
   position: absolute;
-  top: 0px;
-  right: 10px;
-  text-shadow: #666 0px 1px 10px;
+  top: 2px;
+  right: 2px;
+  padding-top: 2px;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.7);
+  height: 36px;
+  width: 40px;
+  border-bottom-left-radius: 7px;
 }
 
 /* ====================== Restaurant Details ====================== */
@@ -291,6 +296,84 @@ nav h1 a {
   bottom: 0;
   position: absolute;
   width: 50%;
+}
+.inside #fav {
+  color: #FF5252;
+  font-size: 1.7em;
+  line-height: 0.8em;
+  position: absolute;
+  top: 190px;
+  left: calc(50% - 42px);
+  padding-top: 2px;
+  padding-left: 2px;
+  cursor: pointer;
+  background: rgba(253, 253, 253, 0.7);
+  height: 36px;
+  width: 40px;
+  border-bottom-left-radius: 7px;
+}
+
+.rating {
+  width: 50%;
+  text-align: center;
+}
+.rating button {
+  border: 0px;
+  padding: 10px;
+  background: #fff;
+  cursor: pointer;
+  font-size: 1em;
+  background: #FF5252;
+  color: #212121;
+  border-radius: 3px;
+  margin-bottom: 5px;
+}
+
+#writeReview {
+  background: rgba(0, 0, 0, 0.85);
+  height: 100%;
+  width: 100%;
+  z-index: 10000;
+  position: fixed;
+  top: 0px;
+  color: #fff;
+  display: none;
+}
+#writeReview #closeReview {
+  color: #fff;
+  position: absolute;
+  top: 7px;
+  right: 10px;
+  font-size: 2em;
+  font-weight: bold;
+  cursor: pointer;
+}
+#writeReview #reviewForm {
+  position: relative;
+  top: 30%;
+  transform: translateY(-30%);
+  margin: 0px 10px;
+}
+#writeReview #reviewForm input {
+  width: 198px;
+}
+#writeReview #reviewForm textarea {
+  width: 200px;
+}
+#writeReview #reviewForm #sendReview {
+  border: 1px solid #555;
+  background: #eee;
+  padding: 3px 5px;
+  border-radius: 3px;
+  font-size: 1em;
+  cursor: pointer;
+  width: min-content;
+}
+#writeReview #reviewForm table {
+  margin: 0px auto;
+}
+#writeReview label {
+  color: #fff;
 }
 
 #restaurant-name {
@@ -418,6 +501,11 @@ nav h1 a {
     right: inherit;
   }
 
+  .rating {
+    width: 100%;
+    order: 6;
+  }
+
   #restaurant-name {
     width: calc(100% - 10px);
     order: 2;
@@ -452,7 +540,7 @@ nav h1 a {
   }
 
   #reviews-container {
-    order: 6;
+    order: 7;
     width: calc(100% - 40px);
     padding: 30px 20px 100px;
     position: relative;

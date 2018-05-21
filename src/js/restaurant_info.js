@@ -19,14 +19,52 @@ window.initMap = () => {
       DBHelper.mapMarkerForRestaurant(self.restaurant, self.map);
     }
   });
+  let close = document.getElementById('closeReview');
+  close.addEventListener("click", function () {
+    toggleRev(0);
+  });
+  let open = document.getElementById('openReview');
+  open.addEventListener("click", function () {
+    toggleRev(1);
+  });
+  let sent = document.getElementById('sendReview');
+  sent.addEventListener("click", function () {
+    submit();
+  });
+  let form = document.getElementById('reviewForm');
+  form.addEventListener('submit', event => {
+    event.preventDefault();
+    submit();
+    console.log('Form submission cancelled.');
+  });
+}
+
+submit = function() {
+  let form = document.getElementById('reviewForm');
+  let name = form.elements["name"];
+  let rating = form.elements["rating"];
+  let comments = form.elements["comments"];
+  // TODO: sent Form data or store in idb
+  name.value = '';
+  rating.value = 1;
+  comments.value = '';
+  toggleRev(0);
+}
+
+toggleRev = function (onOff) {
+  let rev = document.getElementById('writeReview');
+  if (onOff) {
+    rev.style.display = 'block';
+  } else {
+    rev.style.display = 'none';
+  }
 }
 
 registerServiceWorker = function () {
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('/sw.js').then(function (reg) {
-       console.log("Service Worker Registered"); 
-      }
-    );
+      console.log("Service Worker Registered");
+    });
   }
 }
 
@@ -83,7 +121,7 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
     image.title = `No image for ${restaurant.name} available`;
     image.alt = `No image for ${restaurant.name} available`;
   }
-
+  document.getElementById('headingReview').innerHTML = `Review for ${restaurant.name}`;
   const cuisine = document.getElementById('restaurant-cuisine');
   cuisine.innerHTML = restaurant.cuisine_type;
 
@@ -164,7 +202,7 @@ createReviewHTML = (review) => {
 /**
  * Add restaurant name to the breadcrumb navigation menu
  */
-fillBreadcrumb = (restaurant=self.restaurant) => {
+fillBreadcrumb = (restaurant = self.restaurant) => {
   const breadcrumb = document.getElementById('breadcrumb');
   const li = document.createElement('li');
   li.innerHTML = restaurant.name;
