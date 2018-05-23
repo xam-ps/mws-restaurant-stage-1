@@ -16,8 +16,8 @@ document.addEventListener('DOMContentLoaded', (event) => {
 registerServiceWorker = function () {
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('/sw.js').then(function (reg) {
-       console.log("Service Worker Registered"); 
-      }
+      console.log("Service Worker Registered");
+    }
     );
   }
 }
@@ -152,19 +152,16 @@ createRestaurantHTML = (restaurant) => {
   image.className = 'restaurant-img';
   var imgsrc = DBHelper.imageUrlForRestaurant(restaurant);
   if (parseInt(imgsrc) != -1) {
-    image.src = imgsrc;
-    imgsrc = imgsrc.split('.');
-    image.srcset = `${imgsrc[0]}-200.${imgsrc[1]} 200w, ${imgsrc[0]}-400.${imgsrc[1]} 400w, ${imgsrc[0]}-600.${imgsrc[1]} 600w, ${imgsrc[0]}.${imgsrc[1]} 800w`;
     image.title = `Picture of ${restaurant.name}`;
     image.alt = `Picture of ${restaurant.name}`;
   } else {
-    let imgsrc = '/img/noimage.jpg';
-    image.src = imgsrc;
-    imgsrc = imgsrc.split('.');
-    image.srcset = `${imgsrc[0]}-200.${imgsrc[1]} 200w, ${imgsrc[0]}-400.${imgsrc[1]} 400w, ${imgsrc[0]}-600.${imgsrc[1]} 600w, ${imgsrc[0]}.${imgsrc[1]} 800w`;
+    imgsrc = '/img/noimage.jpg';
     image.title = `No image for ${restaurant.name} available`;
     image.alt = `No image for ${restaurant.name} available`;
   }
+  image.src = imgsrc;
+  imgsrc = imgsrc.split('.');
+  image.srcset = `${imgsrc[0]}-200.${imgsrc[1]} 200w, ${imgsrc[0]}-400.${imgsrc[1]} 400w, ${imgsrc[0]}-600.${imgsrc[1]} 600w, ${imgsrc[0]}.${imgsrc[1]} 800w`;
 
   li.append(image);
 
@@ -185,12 +182,37 @@ createRestaurantHTML = (restaurant) => {
   more.href = DBHelper.urlForRestaurant(restaurant);
   li.append(more)
 
-  /* const fav = document.createElement('p');
-  fav.innerHTML = '♥';
+  const fav = document.createElement('p');
   fav.className = 'fav';
-  li.append(fav); */
+  if ((restaurant.is_favorite == 'true') || (restaurant.is_favorite == true)) {
+    fav.innerHTML = '<i class="fas fa-heart"></i>';
+  } else {
+    fav.innerHTML = '<i class="far fa-heart"></i>';
+  }
+  fav.addEventListener("click", function () { toggleFav(restaurant.id, fav); });
+  li.append(fav);
 
   return li
+}
+
+toggleFav = (id, elm) => {
+  if (elm.innerHTML == '<i class="fas fa-heart"></i>') {
+    DBHelper.changeFavorite(id, 'false', (res) => {
+      if (res === 0) {
+        elm.innerHTML = '<i class="far fa-heart"></i>';
+      } else {
+        alert(`Sorry, but you're offline right now`);
+      }
+    })
+  } else {
+    DBHelper.changeFavorite(id, 'true', (res) => {
+      if (res === 0) {
+        elm.innerHTML = '<i class="fas fa-heart"></i>';
+      } else {
+        alert(`Sorry, but you're offline right now`);
+      }
+    })
+  }
 }
 
 /**
