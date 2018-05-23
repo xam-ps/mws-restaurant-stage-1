@@ -1,6 +1,14 @@
 let db;
-dbPromise = idb.open('yelplight', 1, function (upgradeDb) {
-  upgradeDb.createObjectStore('restaurants', { keyPath: 'id' });
+dbPromise = idb.open('yelplight', 3, function (upgradeDb) {
+  switch (upgradeDb.oldVersion) {
+    case 0:
+      upgradeDb.createObjectStore('restaurants', { keyPath: 'id' });
+    case 1:
+      reviewStore = upgradeDb.createObjectStore('reviews', { keyPath: 'id' });
+      reviewStore.createIndex('restaurantId', 'restaurant_id');
+    case 2:
+      upgradeDb.createObjectStore('local_reviews', { keyPath: 'restaurant_id' });
+  }
 });
 
 /**
@@ -20,18 +28,18 @@ class DBHelper {
     return `https://sheltered-garden-81446.herokuapp.com/`;
   }
 
-  static changeFavorite(id, state, callback){
+  static changeFavorite(id, state, callback) {
     const url = `${DBHelper.DATABASE_URL}restaurants/${id}/?is_favorite=${state}`;
     fetch(url, {
-        method: 'PUT'
+      method: 'PUT'
     })
-    .then(response => response.json())
-    .then(function(response){
-      callback(0);
-    })
-    .catch(function(error) {
-      callback(-1);
-    })
+      .then(response => response.json())
+      .then(function (response) {
+        callback(0);
+      })
+      .catch(function (error) {
+        callback(-1);
+      })
   }
 
   /**
@@ -81,23 +89,80 @@ class DBHelper {
         })
         callback(null, response);
       }).catch(function (error) {
-        dbPromise.then(db => {
-          return db.transaction('restaurants')
-            .objectStore('restaurants').get(id);
-        }).then(obj => console.log(obj));
         dbPromise.then(function (db) {
           let tx = db.transaction('restaurants');
           let restaurantStore = tx.objectStore('restaurants');
           return restaurantStore.get(Number(id));
         }).then(
           val => {
-            if(val) {
+            if (val) {
               callback(null, val)
             } else {
               callback(`Sorry, you are offline right now!`, null);
             }
           }
         )
+      });
+  }
+
+  static fetchReviews(id, callback) {
+    // fetch all reviews for restaurant with id.
+
+    const url = `${DBHelper.DATABASE_URL}reviews/?restaurant_id=${id}`;
+    fetch(url)
+      .then(review => review.json())
+      .then(function (response) {
+        dbPromise.then(function (db) {
+          let tx = db.transaction('reviews', 'readwrite');
+          let reviewStore = tx.objectStore('reviews');
+          response.forEach(function (review) {
+            reviewStore.put(review);
+          });
+        });
+        callback(null, response.reverse());
+      }).catch(function (error) {
+        dbPromise.then(function (db) {
+          let tx = db.transaction('reviews');
+          let reviewStore = tx.objectStore('reviews').index('restaurantId');
+          return reviewStore.getAll(Number(id));
+        }).then(function (reviews) {
+          dbPromise.then(function (db) {
+            let tx = db.transaction('local_reviews');
+            let localReviewStore = tx.objectStore('local_reviews');
+            return localReviewStore.getAll(Number(id));
+          }).then(function (localReviews) {
+            let allReviews = reviews.concat(localReviews);
+            callback(null, allReviews.reverse());
+          })
+        }).catch(function (error) {
+          const msg = (`Request failed. Returned status of ${error}`);
+          callback(msg, null);
+        });
+      });
+  }
+
+  static submitReview(review) {
+    const url = `${DBHelper.DATABASE_URL}reviews/`;
+    fetch(url, {
+      method: 'POST',
+      body: JSON.stringify(review),
+      headers: {
+        'content-type': 'application/json'
+      },
+    })
+      .then(response => response.json())
+      .then(function (val) {
+        console.log(val);
+      }).catch(function (error) {
+        dbPromise.then(function (db) {
+          let tx = db.transaction('local_reviews', 'readwrite');
+          let restaurantStore = tx.objectStore('local_reviews');
+          restaurantStore.put(review);
+        }).then(function () {
+          navigator.serviceWorker.ready.then(function (swRegistration) {
+            return swRegistration.sync.register('syncReviews');
+          });
+        })
       });
   }
 

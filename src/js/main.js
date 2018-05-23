@@ -184,7 +184,7 @@ createRestaurantHTML = (restaurant) => {
 
   const fav = document.createElement('p');
   fav.className = 'fav';
-  if (restaurant.is_favorite == 'true') {
+  if ((restaurant.is_favorite == 'true') || (restaurant.is_favorite == true)) {
     fav.innerHTML = '<i class="fas fa-heart"></i>';
   } else {
     fav.innerHTML = '<i class="far fa-heart"></i>';
@@ -199,15 +199,17 @@ toggleFav = (id, elm) => {
   if (elm.innerHTML == '<i class="fas fa-heart"></i>') {
     DBHelper.changeFavorite(id, 'false', (res) => {
       if (res === 0) {
-        console.log(`addFav for ${id}`);
         elm.innerHTML = '<i class="far fa-heart"></i>';
+      } else {
+        alert(`Sorry, but you're offline right now`);
       }
     })
   } else {
     DBHelper.changeFavorite(id, 'true', (res) => {
       if (res === 0) {
-        console.log(`addFav for ${id}`);
         elm.innerHTML = '<i class="fas fa-heart"></i>';
+      } else {
+        alert(`Sorry, but you're offline right now`);
       }
     })
   }

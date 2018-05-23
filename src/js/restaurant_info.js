@@ -27,27 +27,29 @@ window.initMap = () => {
   open.addEventListener("click", function () {
     toggleRev(1);
   });
-  let sent = document.getElementById('sendReview');
-  sent.addEventListener("click", function () {
-    submit();
-  });
   let form = document.getElementById('reviewForm');
   form.addEventListener('submit', event => {
     event.preventDefault();
     submit();
-    console.log('Form submission cancelled.');
   });
 }
 
-submit = function() {
+submit = function () {
   let form = document.getElementById('reviewForm');
   let name = form.elements["name"];
   let rating = form.elements["rating"];
   let comments = form.elements["comments"];
-  // TODO: sent Form data or store in idb
+  let review = {};
+  review.name = name.value;
+  review.rating = rating.value;
+  review.comments = comments.value;
+  review.restaurant_id = Number(getParameterByName('id'));
+  DBHelper.submitReview(review);
   name.value = '';
   rating.value = 1;
   comments.value = '';
+  const ul = document.getElementById('reviews-list');
+  ul.insertBefore(createReviewHTML(review),ul.firstChild);
   toggleRev(0);
 }
 
@@ -64,6 +66,20 @@ registerServiceWorker = function () {
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('/sw.js').then(function (reg) {
       console.log("Service Worker Registered");
+    });
+  }
+}
+
+fetchReviews = () => {
+  const id = getParameterByName('id');
+  if (!id) { // no id found in URL
+    error = 'No restaurant id in URL'
+    callback(error, null);
+  } else {
+    DBHelper.fetchReviews(id, (error, reviews) => {
+      self.restaurant.reviews = reviews;
+      // fill reviews
+      fillReviewsHTML();
     });
   }
 }
@@ -129,8 +145,7 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
   if (restaurant.operating_hours) {
     fillRestaurantHoursHTML();
   }
-  // fill reviews
-  fillReviewsHTML();
+  fetchReviews();
 }
 
 /**
