@@ -2,12 +2,18 @@ let db;
 dbPromise = idb.open('yelplight', 3, function (upgradeDb) {
   switch (upgradeDb.oldVersion) {
     case 0:
-      upgradeDb.createObjectStore('restaurants', { keyPath: 'id' });
+      upgradeDb.createObjectStore('restaurants', {
+        keyPath: 'id'
+      });
     case 1:
-      reviewStore = upgradeDb.createObjectStore('reviews', { keyPath: 'id' });
+      reviewStore = upgradeDb.createObjectStore('reviews', {
+        keyPath: 'id'
+      });
       reviewStore.createIndex('restaurantId', 'restaurant_id');
     case 2:
-      upgradeDb.createObjectStore('local_reviews', { keyPath: 'restaurant_id' });
+      upgradeDb.createObjectStore('local_reviews', {
+        keyPath: 'restaurant_id'
+      });
   }
 });
 
@@ -31,8 +37,8 @@ class DBHelper {
   static changeFavorite(id, state, callback) {
     const url = `${DBHelper.DATABASE_URL}restaurants/${id}/?is_favorite=${state}`;
     fetch(url, {
-      method: 'PUT'
-    })
+        method: 'PUT'
+      })
       .then(response => response.json())
       .then(function (response) {
         callback(0);
@@ -144,12 +150,12 @@ class DBHelper {
   static submitReview(review) {
     const url = `${DBHelper.DATABASE_URL}reviews/`;
     fetch(url, {
-      method: 'POST',
-      body: JSON.stringify(review),
-      headers: {
-        'content-type': 'application/json'
-      },
-    })
+        method: 'POST',
+        body: JSON.stringify(review),
+        headers: {
+          'content-type': 'application/json'
+        },
+      })
       .then(response => response.json())
       .then(function (val) {
         console.log(val);
@@ -158,12 +164,75 @@ class DBHelper {
           let tx = db.transaction('local_reviews', 'readwrite');
           let restaurantStore = tx.objectStore('local_reviews');
           restaurantStore.put(review);
-        }).then(function () {
-          navigator.serviceWorker.ready.then(function (swRegistration) {
-            return swRegistration.sync.register('syncReviews');
+        }).then(() => {
+          navigator.serviceWorker.ready.then(swRegistration => {
+            swRegistration.sync.register('syncReviews')
+              .then(() => {
+                console.log(`background sync registered for ${review}`);
+              });
           });
+
+          if (navigator.serviceWorker.controller) {
+            navigator.serviceWorker.ready.then(function (reg) {
+              if (reg.periodicSync) {
+                reg.periodicSync.register({
+                    tag: 'syncReviews',
+                    minPeriod: 20000,
+                    powerState: 'auto',
+                    networkState: 'any'
+                  })
+                  .then(function (event) {
+                    console.log('Periodic Sync registration successful', event);
+                  })
+                  .catch(function (error) {
+                    console.log('Periodic Sync registration failed', error);
+                  });
+              } else {
+                console.log("Background Sync not supported");
+              }
+            });
+          } else {
+            console.log("No active ServiceWorker");
+          }
+
+          /* navigator.serviceWorker.ready.then(function (swRegistration) {
+            return swRegistration.sync.register('syncReviews');
+          }); */
         })
       });
+  }
+
+  static sendToBackend() {
+    dbPromise.then(function (db) {
+      console.log("DB connection");
+      let tx = db.transaction('local_reviews');
+      let restaurantStore = tx.objectStore('local_reviews');
+      return restaurantStore.getAll();
+    }).then(val => {
+      val.forEach(function (review) {
+        console.log(`offline review: ${review}`);
+        const url = `${DBHelper.DATABASE_URL}reviews/`;
+        fetch(url, {
+            method: 'POST',
+            body: JSON.stringify(review),
+            headers: {
+              'content-type': 'application/json'
+            },
+          })
+          .then(response => response.json())
+          .then(function (val) {
+            console.log("successfull");
+            dbPromise.then(function (db) {
+              console.log("deleting form idb");
+              let tx = db.transaction('local_reviews', 'readwrite');
+              let restaurantStore = tx.objectStore('local_reviews');
+              restaurantStore.delete(review.restaurant_id)
+            })
+          }).catch(function (error) {
+            console.log(error);
+          });
+      })
+    })
   }
 
   /**
@@ -283,8 +352,7 @@ class DBHelper {
       url: DBHelper.urlForRestaurant(restaurant),
       map: map,
       animation: google.maps.Animation.DROP
-    }
-    );
+    });
     return marker;
   }
 

@@ -32,6 +32,16 @@ window.initMap = () => {
     event.preventDefault();
     submit();
   });
+  window.onkeyup = function (e) {
+    var key = e.keyCode ? e.keyCode : e.which;
+    if (key == 27) {
+      const rev = document.getElementById('writeReview');
+      const display = rev.style.display;
+      if (display != 'none') {
+        rev.style.display = 'none';
+      }
+    }
+  }
 }
 
 submit = function () {
@@ -49,7 +59,7 @@ submit = function () {
   rating.value = 1;
   comments.value = '';
   const ul = document.getElementById('reviews-list');
-  ul.insertBefore(createReviewHTML(review),ul.firstChild);
+  ul.insertBefore(createReviewHTML(review), ul.firstChild);
   toggleRev(0);
 }
 
@@ -63,10 +73,18 @@ toggleRev = function (onOff) {
 }
 
 registerServiceWorker = function () {
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/sw.js').then(function (reg) {
-      console.log("Service Worker Registered");
-    });
+  if (navigator.serviceWorker) {
+    console.log("ServiceWorkers are supported");
+
+    navigator.serviceWorker.register('sw.js', {
+        scope: './'
+      })
+      .then(function (reg) {
+        console.log("ServiceWorker registered ◕‿◕", reg);
+      })
+      .catch(function (error) {
+        console.log("Failed to register ServiceWorker ಠ_ಠ", error);
+      });
   }
 }
 
@@ -173,7 +191,7 @@ fillRestaurantHoursHTML = (operatingHours = self.restaurant.operating_hours) => 
  */
 fillReviewsHTML = (reviews = self.restaurant.reviews) => {
   const container = document.getElementById('reviews-container');
-  const title = document.createElement('h2');
+  const title = document.createElement('h3');
   title.innerHTML = 'Reviews';
   container.appendChild(title);
 
@@ -221,6 +239,7 @@ fillBreadcrumb = (restaurant = self.restaurant) => {
   const breadcrumb = document.getElementById('breadcrumb');
   const li = document.createElement('li');
   li.innerHTML = restaurant.name;
+  li.setAttribute("aria-current", "page");
   breadcrumb.appendChild(li);
 }
 

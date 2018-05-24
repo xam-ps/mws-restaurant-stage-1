@@ -1,6 +1,6 @@
 self.importScripts('js/idb.js', 'js/dbhelper.js');
 
-var staticCacheName = 'yelplight-v0.4.87';
+var staticCacheName = 'yelplight-v0.4.105';
 var contentImgsCache = 'yelplight-content-imgs';
 var contentRestaurants = 'yelplight-restaurants'
 var allCaches = [
@@ -10,35 +10,20 @@ var allCaches = [
 ];
 
 self.addEventListener('sync', function (event) {
+    console.log("Syncing");
     if (event.tag == 'syncReviews') {
         event.waitUntil(
-            dbPromise.then(function (db) {
-                let tx = db.transaction('local_reviews');
-                let restaurantStore = tx.objectStore('local_reviews');
-                return restaurantStore.getAll();
-            }).then(val => {
-                val.forEach(function (review) {
-                    const url = `${DBHelper.DATABASE_URL}reviews/?restaurant_id=${review.restaurant_id}`;
-                    fetch(url, {
-                        method: 'POST',
-                        body: JSON.stringify(review),
-                        headers: {
-                            'content-type': 'application/json'
-                        },
-                    })
-                        .then(response => response.json())
-                        .then(function (val) {
-                            dbPromise.then(function (db) {
-                                let tx = db.transaction('local_reviews');
-                                let restaurantStore = tx.objectStore('local_reviews');
-                                restaurantStore.delete(review.restaurant_id)
-                            })
-                        }).catch(function (error) {
-                            console.log(error);
-                        });
-                })
-            })
-        );
+            DBHelper.sendToBackend()
+        )
+    }
+});
+
+self.addEventListener('periodicsync', function (event) {
+    if (event.registration.tag == "syncReviews") {
+        console.log("Periodic sync event occurred: ", event);
+        event.waitUntil(
+            DBHelper.sendToBackend()
+        )
     }
 });
 
