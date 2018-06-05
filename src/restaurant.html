@@ -2,10 +2,8 @@
 <html lang="en">
 
 <head>
-  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp"
-    crossorigin="anonymous">
   <!-- Normalize.css for better cross-browser consistency -->
-  <link rel="stylesheet" src="//normalize-css.googlecode.com/svn/trunk/normalize.css" />
+  <!-- <link rel="stylesheet" src="//normalize-css.googlecode.com/svn/trunk/normalize.css" /> -->
   <!-- Main CSS file -->
   <link rel="stylesheet" href="css/styles.css" type="text/css">
   <title>Restaurant Info</title>
@@ -68,47 +66,49 @@
 
   <section id="writeReview">
     <button id="closeReview" title="Close Review">x</button>
-    <form id="reviewForm" title="Review Form" role="form">
+    <div class="centerContainer">
       <h3 id="headingReview"></h3>
-      <table>
-        <tr>
-          <td>
-            <label for="name">Name:</label>
-          </td>
-          <td>
-            <input type="text" id="name" name="name" />
-          </td>
-        </tr>
-        <tr>
-          <td>
-            <label for="rating">Bewertung:</label>
-          </td>
-          <td>
-            <select name="rating" id="rating">
-              <option value="1">1</option>
-              <option value="2">2</option>
-              <option value="3">3</option>
-              <option value="4">4</option>
-              <option value="5">5</option>
-            </select>
-          </td>
-        </tr>
-        <tr>
-          <td>
-            <label for="comments">Comment:</label>
-          </td>
-          <td>
-            <textarea rows="4" name="comments" id="comments"></textarea>
-          </td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>
-            <button id="sendReview">Send</button>
-          </td>
-        </tr>
-      </table>
-    </form>
+      <form id="reviewForm" title="Review Form" role="form">
+        <table>
+          <tr>
+            <td>
+              <label for="name">Name:</label>
+            </td>
+            <td>
+              <input type="text" id="name" name="name" />
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <label for="rating">Bewertung:</label>
+            </td>
+            <td>
+              <select name="rating" id="rating">
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+              </select>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <label for="comments">Comment:</label>
+            </td>
+            <td>
+              <textarea rows="4" name="comments" id="comments"></textarea>
+            </td>
+          </tr>
+          <tr>
+            <td></td>
+            <td>
+              <button id="sendReview">Send</button>
+            </td>
+          </tr>
+        </table>
+      </form>
+    </div>
   </section>
 
   <!-- Beginning footer -->
