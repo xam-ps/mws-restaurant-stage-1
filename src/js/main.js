@@ -185,9 +185,9 @@ createRestaurantHTML = (restaurant) => {
   const fav = document.createElement('p');
   fav.className = 'fav';
   if ((restaurant.is_favorite == 'true') || (restaurant.is_favorite == true)) {
-    fav.innerHTML = '<i class="fas fa-heart"></i>';
+    fav.innerHTML = '<div class="red">♥</div>';
   } else {
-    fav.innerHTML = '<i class="far fa-heart"></i>';
+    fav.innerHTML = '<div class="black">♥</div>';
   }
   fav.addEventListener("click", function () { toggleFav(restaurant.id, fav); });
   li.append(fav);
@@ -196,10 +196,10 @@ createRestaurantHTML = (restaurant) => {
 }
 
 toggleFav = (id, elm) => {
-  if (elm.innerHTML == '<i class="fas fa-heart"></i>') {
+  if (elm.innerHTML == '<div class="red">♥</div>') {
     DBHelper.changeFavorite(id, 'false', (res) => {
       if (res === 0) {
-        elm.innerHTML = '<i class="far fa-heart"></i>';
+        elm.innerHTML = '<div class="black">♥</div>';
       } else {
         alert(`Sorry, but you're offline right now`);
       }
@@ -207,7 +207,7 @@ toggleFav = (id, elm) => {
   } else {
     DBHelper.changeFavorite(id, 'true', (res) => {
       if (res === 0) {
-        elm.innerHTML = '<i class="fas fa-heart"></i>';
+        elm.innerHTML = '<div class="red">♥</div>';
       } else {
         alert(`Sorry, but you're offline right now`);
       }

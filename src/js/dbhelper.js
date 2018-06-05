@@ -1,5 +1,5 @@
 let db;
-dbPromise = idb.open('yelplight', 3, function (upgradeDb) {
+dbPromise = idb.open('yelplight', 4, function (upgradeDb) {
   switch (upgradeDb.oldVersion) {
     case 0:
       upgradeDb.createObjectStore('restaurants', {
@@ -12,6 +12,10 @@ dbPromise = idb.open('yelplight', 3, function (upgradeDb) {
       reviewStore.createIndex('restaurantId', 'restaurant_id');
     case 2:
       upgradeDb.createObjectStore('local_reviews', {
+        keyPath: 'restaurant_id'
+      });
+    case 3:
+      upgradeDb.createObjectStore('local_favs', {
         keyPath: 'restaurant_id'
       });
   }
@@ -36,6 +40,20 @@ class DBHelper {
 
   static changeFavorite(id, state, callback) {
     const url = `${DBHelper.DATABASE_URL}restaurants/${id}/?is_favorite=${state}`;
+    dbPromise.then(function (db) {
+      let tx = db.transaction('restaurants');
+      let restaurantStore = tx.objectStore('restaurants');
+      return restaurantStore.get(Number(id));
+    }).then(
+      val => {
+        val.is_favorite = state;
+        dbPromise.then(function (db) {
+          let tx = db.transaction('restaurants', 'readwrite');
+          let restaurantStore = tx.objectStore('restaurants');
+          restaurantStore.put(val);
+        })
+      }
+    )
     fetch(url, {
         method: 'PUT'
       })
@@ -44,8 +62,76 @@ class DBHelper {
         callback(0);
       })
       .catch(function (error) {
-        callback(-1);
+        dbPromise.then(function (db) {
+          console.log("DB connection");
+          let tx = db.transaction('local_favs', 'readwrite');
+          let restaurantStore = tx.objectStore('local_favs');
+          let rest = {};
+          rest.restaurant_id = id;
+          rest.state = state;
+          restaurantStore.put(rest);
+          return tx.complete;
+        }).then(() => {
+          navigator.serviceWorker.ready.then(swRegistration => {
+            swRegistration.sync.register('syncFavs')
+              .then(() => {
+                console.log(`background sync registered for fav ${id}`);
+                callback(0);
+              });
+          });
+
+          if (navigator.serviceWorker.controller) {
+            navigator.serviceWorker.ready.then(function (reg) {
+              if (reg.periodicSync) {
+                reg.periodicSync.register({
+                    tag: 'syncFavs',
+                    minPeriod: 20000,
+                    powerState: 'auto',
+                    networkState: 'any'
+                  })
+                  .then(function (event) {
+                    console.log('Periodic Sync registration successful', event);
+                  })
+                  .catch(function (error) {
+                    console.log('Periodic Sync registration failed', error);
+                  });
+              } else {
+                console.log("Background Sync not supported");
+              }
+            });
+          } else {
+            console.log("No active ServiceWorker");
+          }
+        })
       })
+  }
+
+  static sendFavsToBackend() {
+    dbPromise.then(function (db) {
+      console.log("DB connection");
+      let tx = db.transaction('local_favs');
+      let restaurantStore = tx.objectStore('local_favs');
+      return restaurantStore.getAll();
+    }).then(val => {
+      val.forEach(function (fav) {
+        console.log(`offline fav: ${fav}`);
+        const url = `${DBHelper.DATABASE_URL}${fav.restaurant_id}/?is_favorite=${fav.state}`;
+        fetch(url, {
+            method: 'PUT'
+          })
+          .then(function (val) {
+            console.log("fav successfull");
+            dbPromise.then(function (db) {
+              console.log("deleting fav form idb");
+              let tx = db.transaction('local_favs', 'readwrite');
+              let restaurantStore = tx.objectStore('local_favs');
+              restaurantStore.delete(fav.restaurant_id)
+            })
+          }).catch(function (error) {
+            console.log(error);
+          });
+      })
+    })
   }
 
   /**

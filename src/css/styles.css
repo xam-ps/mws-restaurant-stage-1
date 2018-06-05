@@ -11,7 +11,7 @@ th,
 p {
   font-family: Arial, Helvetica, sans-serif;
   font-size: 16pt;
-  color: #212121;
+  color: #000000;
   line-height: 1.2em;
 }
 
@@ -80,7 +80,7 @@ section {
 }
 
 #footer {
-  background-color: #212121;
+  background-color: #000000;
   padding: 25px 0px;
   width: 100%;
 }
@@ -173,7 +173,7 @@ section {
   width: 200px;
 }
 .filter-options select:focus {
-  box-shadow: 0 0 4px 4px #FF5252;
+  box-shadow: 0 0 4px 4px #ff8a65;
 }
 
 /* ====================== Restaurant Listing ====================== */
@@ -217,9 +217,9 @@ section {
   text-transform: uppercase;
 }
 #restaurants-list li a {
-  background-color: #FF5252;
+  background-color: #ff8a65;
   border-bottom: 3px solid #eeeeee;
-  color: #212121;
+  color: #000000;
   display: inline-block;
   font-size: 10pt;
   margin: 15px 0 0;
@@ -240,7 +240,6 @@ section {
   font-size: 11pt;
 }
 #restaurants-list .fav {
-  color: #FF5252;
   font-size: 2.5em;
   line-height: 0.8em;
   position: absolute;
@@ -252,6 +251,15 @@ section {
   height: 36px;
   width: 40px;
   border-bottom-left-radius: 7px;
+}
+#restaurants-list .fav div {
+  font-size: 47px;
+}
+#restaurants-list .fav .red {
+  color: #FF5252;
+}
+#restaurants-list .fav .black {
+  color: #313131;
 }
 
 h1 {
@@ -299,7 +307,7 @@ h1 a {
   width: 50%;
 }
 .inside #fav {
-  color: #FF5252;
+  color: #ff8a65;
   font-size: 1.7em;
   line-height: 0.8em;
   position: absolute;
@@ -324,8 +332,8 @@ h1 a {
   background: #fff;
   cursor: pointer;
   font-size: 1em;
-  background: #FF5252;
-  color: #212121;
+  background: #ff8a65;
+  color: #000000;
   border-radius: 3px;
   margin: 5px 0px;
 }
@@ -351,19 +359,22 @@ h1 a {
   background: none;
   border: none;
 }
-#writeReview #reviewForm {
+#writeReview .centerContainer {
   position: relative;
-  top: 30%;
-  transform: translateY(-30%);
+  top: 40%;
+  transform: translateY(-40%);
   margin: 0px 10px;
 }
-#writeReview #reviewForm input {
+#writeReview .centerContainer #headingReview {
+  text-align: center;
+}
+#writeReview .centerContainer #reviewForm input {
   width: 198px;
 }
-#writeReview #reviewForm textarea {
+#writeReview .centerContainer #reviewForm textarea {
   width: 200px;
 }
-#writeReview #reviewForm #sendReview {
+#writeReview .centerContainer #reviewForm #sendReview {
   border: 1px solid #555;
   background: #eee;
   padding: 3px 5px;
@@ -372,7 +383,7 @@ h1 a {
   cursor: pointer;
   width: min-content;
 }
-#writeReview #reviewForm table {
+#writeReview .centerContainer #reviewForm table {
   margin: 0px auto;
 }
 #writeReview label {

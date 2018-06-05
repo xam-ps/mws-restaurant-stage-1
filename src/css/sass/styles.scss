@@ -5,8 +5,8 @@ $primary-color-dark: #1976D2;
 $primary-color: #2196F3;
 $primary-color-light: #BBDEFB;
 $primary-color-text: #FFFFFF;
-$accent-color: #FF5252;
-$primary-text-color: #212121;
+$accent-color: #ff8a65;
+$primary-text-color: #000000;
 $secondary-text-color: #757575;
 $divider-color: #BDBDBD;
 * {
@@ -253,7 +253,6 @@ section {
         font-size: 11pt;
     }
     .fav {
-        color: $accent-color;
         font-size: 2.5em;
         line-height: 0.8em;
         position: absolute;
@@ -265,6 +264,15 @@ section {
         height: 36px;
         width: 40px;
         border-bottom-left-radius: 7px;
+        div {
+            font-size: 47px;
+        }
+        .red {
+            color: #FF5252;
+        }
+        .black {
+            color: rgb(49, 49, 49);
+        }
     }
 }
 
@@ -369,28 +377,33 @@ h1 {
         background: none;
         border: none;
     }
-    #reviewForm {
+    .centerContainer {
         position: relative;
-        top: 30%;
-        transform: translateY(-30%);
+        top: 40%;
+        transform: translateY(-40%);
         margin: 0px 10px;
-        input {
-            width: 198px;
+        #headingReview {
+            text-align: center;
         }
-        textarea {
-            width: 200px;
-        }
-        #sendReview {
-            border: 1px solid #555;
-            background: #eee;
-            padding: 3px 5px;
-            border-radius: 3px;
-            font-size: 1em;
-            cursor: pointer;
-            width: min-content;
-        }
-        table {
-            margin: 0px auto;
+        #reviewForm {
+            input {
+                width: 198px;
+            }
+            textarea {
+                width: 200px;
+            }
+            #sendReview {
+                border: 1px solid #555;
+                background: #eee;
+                padding: 3px 5px;
+                border-radius: 3px;
+                font-size: 1em;
+                cursor: pointer;
+                width: min-content;
+            }
+            table {
+                margin: 0px auto;
+            }
         }
     }
     label {

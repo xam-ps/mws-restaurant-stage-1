@@ -1,6 +1,6 @@
 self.importScripts('js/idb.js', 'js/dbhelper.js');
 
-var staticCacheName = 'yelplight-v0.4.105';
+var staticCacheName = 'yelplight-v0.5.8';
 var contentImgsCache = 'yelplight-content-imgs';
 var contentRestaurants = 'yelplight-restaurants'
 var allCaches = [
@@ -10,10 +10,15 @@ var allCaches = [
 ];
 
 self.addEventListener('sync', function (event) {
-    console.log("Syncing");
     if (event.tag == 'syncReviews') {
+        console.log("Syncing review");
         event.waitUntil(
             DBHelper.sendToBackend()
+        )
+    } else if(event.tag == 'syncFavs') {
+        console.log("Syncing Fav");
+        event.waitUntil(
+            DBHelper.sendFavsToBackend()
         )
     }
 });
@@ -23,6 +28,11 @@ self.addEventListener('periodicsync', function (event) {
         console.log("Periodic sync event occurred: ", event);
         event.waitUntil(
             DBHelper.sendToBackend()
+        )
+    } else if(event.registration.tag == "syncFavs") {
+        console.log("Periodic sync event occurred: ", event);
+        event.waitUntil(
+            DBHelper.sendFavsToBackend()
         )
     }
 });
