@@ -32,6 +32,12 @@ window.initMap = () => {
     event.preventDefault();
     submit();
   });
+  const mapSwitch = document.getElementById('mapSwitch');
+  mapSwitch.addEventListener("click", function () {
+    let mapContainer = document.getElementById('map-container');
+    mapContainer.style.display = "block";
+    mapSwitch.style.display = 'none';
+  });
   window.onkeyup = function (e) {
     var key = e.keyCode ? e.keyCode : e.which;
     if (key == 27) {

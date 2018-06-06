@@ -76,7 +76,7 @@ module.exports = function (grunt) {
           },{
             width: 450,
             rename: true,
-            quality: 0
+            quality: 2
           },{
             width: 600,
             rename: true,
