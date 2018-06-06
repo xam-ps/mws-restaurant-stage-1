@@ -195,6 +195,12 @@ createRestaurantHTML = (restaurant) => {
   });
   li.append(fav);
 
+  const mapSwitch = document.getElementById('mapSwitch');
+  mapSwitch.addEventListener("click", function(){
+    toggleMap2();
+    mapSwitch.style.display = 'none';
+  });
+
   return li
 }
 
@@ -230,4 +236,13 @@ addMarkersToMap = (restaurants = self.restaurants) => {
     });
     self.markers.push(marker);
   });
+}
+
+toggleMap2 = () => {
+  let mapContainer = document.getElementById('map-container');
+  if(mapContainer.style.display == "none"){
+    mapContainer.style.display = "block";
+  } else {
+    mapContainer.style.display = "none";
+  }
 }
