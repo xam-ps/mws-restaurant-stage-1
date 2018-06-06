@@ -17,8 +17,7 @@ registerServiceWorker = function () {
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('/sw.js').then(function (reg) {
       console.log("Service Worker Registered");
-    }
-    );
+    });
   }
 }
 
@@ -159,9 +158,11 @@ createRestaurantHTML = (restaurant) => {
     image.title = `No image for ${restaurant.name} available`;
     image.alt = `No image for ${restaurant.name} available`;
   }
-  image.src = imgsrc;
   imgsrc = imgsrc.split('.');
-  image.srcset = `${imgsrc[0]}-200.${imgsrc[1]} 200w, ${imgsrc[0]}-400.${imgsrc[1]} 400w, ${imgsrc[0]}-600.${imgsrc[1]} 600w, ${imgsrc[0]}.${imgsrc[1]} 800w`;
+  image.src = `${imgsrc[0]}-450.${imgsrc[1]}`;
+  image.setAttribute('width', '450');
+  image.setAttribute('data-srcset', `${imgsrc[0]}-200.${imgsrc[1]} 200w, ${imgsrc[0]}-400.${imgsrc[1]} 400w, ${imgsrc[0]}-600.${imgsrc[1]} 600w, ${imgsrc[0]}.${imgsrc[1]} 800w`);
+  image.className += ' lazyload';
 
   li.append(image);
 
@@ -189,7 +190,9 @@ createRestaurantHTML = (restaurant) => {
   } else {
     fav.innerHTML = '<div class="black">♥</div>';
   }
-  fav.addEventListener("click", function () { toggleFav(restaurant.id, fav); });
+  fav.addEventListener("click", function () {
+    toggleFav(restaurant.id, fav);
+  });
   li.append(fav);
 
   return li

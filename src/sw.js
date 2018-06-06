@@ -1,6 +1,6 @@
 self.importScripts('js/idb.js', 'js/dbhelper.js');
 
-var staticCacheName = 'yelplight-v0.5.8';
+var staticCacheName = 'yelplight-v0.5.19';
 var contentImgsCache = 'yelplight-content-imgs';
 var contentRestaurants = 'yelplight-restaurants'
 var allCaches = [
