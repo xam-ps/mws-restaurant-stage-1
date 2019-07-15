@@ -12,4 +12,4 @@ A version for distribution can be generated with `grunt dist`, which will create
 This repository contains all the work I did during the Udacity Mobile Web Specialist Course.
 
 ## Examples
-A running version of my work can be found here: [https://mws.xampit.de](https://mws.xampit.de)
+A running version of my work can be found here: [https://mws.4lima.de/](https://mws.4lima.de/)
